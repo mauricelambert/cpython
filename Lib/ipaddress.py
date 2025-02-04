@@ -25,7 +25,7 @@ class NetmaskValueError(ValueError):
     """A Value Error related to the netmask."""
 
 
-def ip_address(address):
+def ip_address(address, allow_zone_id: bool = True):
     """Take an IP string/int and return an object of the correct type.
 
     Args:
@@ -47,7 +47,7 @@ def ip_address(address):
         pass
 
     try:
-        return IPv6Address(address)
+        return IPv6Address(address, allow_zone_id=allow_zone_id)
     except (AddressValueError, NetmaskValueError):
         pass
 
@@ -1904,7 +1904,7 @@ class IPv6Address(_BaseV6, _BaseAddress):
 
     __slots__ = ('_ip', '_scope_id', '__weakref__')
 
-    def __init__(self, address):
+    def __init__(self, address, allow_zone_id: bool = True):
         """Instantiate a new IPv6 address object.
 
         Args:
@@ -1921,12 +1921,18 @@ class IPv6Address(_BaseV6, _BaseAddress):
             AddressValueError: If address isn't a valid IPv6 address.
 
         """
+
+        self.allow_zone_id = allow_zone_id
+
         # Efficient constructor from integer.
         if isinstance(address, int):
             self._check_int_address(address)
             self._ip = address
             self._scope_id = None
             return
+
+        if allow_zone_id and self._scope_id:
+            raise ValueError("Zone ID is not allowed for this IPv6 address")
 
         # Constructing from a packed address
         if isinstance(address, bytes):

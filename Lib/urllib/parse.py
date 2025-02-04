@@ -463,7 +463,7 @@ def _check_bracketed_host(hostname):
         if not re.match(r"\Av[a-fA-F0-9]+\..+\z", hostname):
             raise ValueError(f"IPvFuture address is invalid")
     else:
-        ip = ipaddress.ip_address(hostname) # Throws Value Error if not IPv6 or IPv4
+        ip = ipaddress.ip_address(hostname, allow_zone_id=False) # Throws Value Error if not IPv6 or IPv4
         if isinstance(ip, ipaddress.IPv4Address):
             raise ValueError(f"An IPv4 address cannot be in brackets")
 
