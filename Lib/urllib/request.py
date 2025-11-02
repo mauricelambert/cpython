@@ -343,10 +343,10 @@ class Request:
         self.type, rest = _splittype(self._full_url)
         if self.type is None:
             raise ValueError("unknown url type: %r" % self.full_url)
-        host, self.selector = _splithost(rest)
-        _, self.host = _splituser(host)
+        self.host, self.selector = _splithost(rest)
         if self.host:
-            self.host = unquote(self.host)
+            _, host = _splituser(self.host)
+            self.host = unquote(host)
 
     def get_method(self):
         """Return a string indicating the HTTP request method."""
